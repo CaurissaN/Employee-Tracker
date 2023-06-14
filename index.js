@@ -34,6 +34,9 @@ const mainMenu = () => {
         if(res.action === "Add New Role") {
             addNewRole()
         }
+        if(res.action === "View All Departments") {
+            viewAllDepartments()
+        }
     })
 }
 
@@ -109,6 +112,14 @@ const addNewRole = () => {
             salary: res.roleSalary,
             department_id: res.departmentId
         })
+        mainMenu()
+    })
+}
+
+const viewAllDepartments = () => {
+    db.query(`SELECT * FROM department`, (err, res) => {
+        if(err) throw err;
+        console.table(res);
         mainMenu()
     })
 }
