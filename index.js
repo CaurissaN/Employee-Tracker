@@ -1,4 +1,4 @@
-import  inquirer from "inquirer";
+import inquirer from "inquirer";
 import { createConnection } from 'mysql2';
 
 const db = createConnection({
@@ -19,33 +19,36 @@ const mainMenu = () => {
             type: "list",
             name: "action",
             message: "What would you like to do?",
-            choices: ["View All Employees", "Add New Employee", "View All Roles", "Add New Role","View All Departments", "Add New Department", "Update Employee Role"]
+            choices: ["View All Employees", "Add New Employee", "View All Roles", "Add New Role", "View All Departments", "Add New Department", "Update Employee Role"]
         }
     ]).then((res) => {
-        if(res.action === "View All Employees") {
+        if (res.action === "View All Employees") {
             viewAllEmployees()
         }
-        if(res.action === "Add New Employee") {
+        if (res.action === "Add New Employee") {
             addNewEmployee()
         }
-        if(res.action === "View All Roles") {
+        if (res.action === "View All Roles") {
             viewAllRoles()
         }
-        if(res.action === "Add New Role") {
+        if (res.action === "Add New Role") {
             addNewRole()
         }
-        if(res.action === "View All Departments") {
+        if (res.action === "View All Departments") {
             viewAllDepartments()
         }
-        if(res.action === "Add New Department") {
+        if (res.action === "Add New Department") {
             addNewDepartment()
+        }
+        if (res.action === "Update Employee Role") {
+            updateEmployeeRole()
         }
     })
 }
 
 const viewAllEmployees = () => {
     db.query(`SELECT * FROM employee`, (err, res) => {
-        if(err) throw err;
+        if (err) throw err;
         console.table(res);
         mainMenu()
     })
@@ -86,7 +89,7 @@ const addNewEmployee = () => {
 
 const viewAllRoles = () => {
     db.query(`SELECT * FROM role`, (err, res) => {
-        if(err) throw err;
+        if (err) throw err;
         console.table(res);
         mainMenu()
     })
@@ -121,7 +124,7 @@ const addNewRole = () => {
 
 const viewAllDepartments = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
-        if(err) throw err;
+        if (err) throw err;
         console.table(res);
         mainMenu()
     })
@@ -140,4 +143,47 @@ const addNewDepartment = () => {
         })
         mainMenu()
     })
+}
+
+const updateEmployeeRole = () => {
+    db.query(`SELECT * FROM employee`, (err, data) => {
+        if (err) throw err;
+        const employees = data.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'name',
+                message: "Which employee would you like to update?",
+                choices: employees
+            }
+        ])
+            .then(empChoice => {
+                const employee = empChoice.name;
+                const params = [];
+                params.push(employee);
+                db.query(`SELECT * FROM role`, (err, data) => {
+                    if (err) throw err;
+                    const roles = data.map(({ id, title }) => ({ name: title, value: id }));
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'role',
+                            message: "What is the employee's new role?",
+                            choices: roles
+                        }
+                    ])
+                        .then(roleChoice => {
+                            const role = roleChoice.role;
+                            params.push(role);
+                            let employee = params[0]
+                            params[0] = role
+                            params[1] = employee
+                            db.query(`UPDATE employee SET role_id = ? WHERE id = ?`, params, (err, result) => {
+                                if (err) throw err;
+                                mainMenu();
+                            });
+                        });
+                });
+            });
+    });
 }
