@@ -25,6 +25,9 @@ const mainMenu = () => {
         if(res.action === "View All Employees") {
             viewAllEmployees()
         }
+        if(res.action === "Add New Employee") {
+            addNewEmployee()
+        }
     })
 }
 
@@ -32,6 +35,39 @@ const viewAllEmployees = () => {
     db.query(`SELECT * FROM employee`, (err, res) => {
         if(err) throw err;
         console.table(res);
+        mainMenu()
+    })
+}
+
+const addNewEmployee = () => {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "firstName",
+            message: "What is this employees first name?",
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "What is this employees last name?",
+        },
+        {
+            type: "input",
+            name: "roleId",
+            message: "What is this employees role ID?",
+        },
+        {
+            type: "input",
+            name: "managerId",
+            message: "What is this employees manager ID?",
+        }
+    ]).then((res) => {
+        db.query(`INSERT INTO employee SET ?`, {
+            first_name: res.firstName,
+            last_name: res.lastName,
+            role_id: res.roleId,
+            manager_id: res.managerId
+        })
         mainMenu()
     })
 }
