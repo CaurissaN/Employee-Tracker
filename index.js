@@ -37,6 +37,9 @@ const mainMenu = () => {
         if(res.action === "View All Departments") {
             viewAllDepartments()
         }
+        if(res.action === "Add New Department") {
+            addNewDepartment()
+        }
     })
 }
 
@@ -120,6 +123,21 @@ const viewAllDepartments = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
         if(err) throw err;
         console.table(res);
+        mainMenu()
+    })
+}
+
+const addNewDepartment = () => {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "departmentTitle",
+            message: "What is this departments title?",
+        },
+    ]).then((res) => {
+        db.query(`INSERT INTO department SET ?`, {
+            department_name: res.departmentTitle,
+        })
         mainMenu()
     })
 }
