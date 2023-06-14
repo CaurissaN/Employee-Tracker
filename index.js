@@ -28,6 +28,9 @@ const mainMenu = () => {
         if(res.action === "Add New Employee") {
             addNewEmployee()
         }
+        if(res.action === "View All Roles") {
+            viewAllRoles()
+        }
     })
 }
 
@@ -68,6 +71,14 @@ const addNewEmployee = () => {
             role_id: res.roleId,
             manager_id: res.managerId
         })
+        mainMenu()
+    })
+}
+
+const viewAllRoles = () => {
+    db.query(`SELECT * FROM role`, (err, res) => {
+        if(err) throw err;
+        console.table(res);
         mainMenu()
     })
 }
