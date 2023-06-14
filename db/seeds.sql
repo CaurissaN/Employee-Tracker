@@ -6,7 +6,7 @@ VALUES (1, "Board"),
        (5, "Legal");
 
 -- Role seeds
-INSERT INTO roles (department_id, title, salary)
+INSERT INTO role (department_id, title, salary)
 VALUES (1, "CEO", 1000000),
        (2, "Sales Lead", 100000),
        (2, "Salesperson", 80000),
