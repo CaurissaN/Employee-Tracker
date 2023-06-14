@@ -19,7 +19,7 @@ const mainMenu = () => {
             type: "list",
             name: "action",
             message: "What would you like to do?",
-            choices: ["View All Employees", "Add New Employee", "View All Roles", "Add New Roles","View All Departments", "Add New Departments", "Update Employee Role"]
+            choices: ["View All Employees", "Add New Employee", "View All Roles", "Add New Role","View All Departments", "Add New Department", "Update Employee Role"]
         }
     ]).then((res) => {
         if(res.action === "View All Employees") {
@@ -30,6 +30,9 @@ const mainMenu = () => {
         }
         if(res.action === "View All Roles") {
             viewAllRoles()
+        }
+        if(res.action === "Add New Role") {
+            addNewRole()
         }
     })
 }
@@ -79,6 +82,33 @@ const viewAllRoles = () => {
     db.query(`SELECT * FROM role`, (err, res) => {
         if(err) throw err;
         console.table(res);
+        mainMenu()
+    })
+}
+
+const addNewRole = () => {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "roleTitle",
+            message: "What is this roles title?",
+        },
+        {
+            type: "input",
+            name: "roleSalary",
+            message: "What is this roles salary?",
+        },
+        {
+            type: "input",
+            name: "departmentId",
+            message: "What is this roles department ID?",
+        }
+    ]).then((res) => {
+        db.query(`INSERT INTO role SET ?`, {
+            title: res.roleTitle,
+            salary: res.roleSalary,
+            department_id: res.departmentId
+        })
         mainMenu()
     })
 }
